@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1776550854889,
+      "tag": "0000_quick_hellion",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1776640339903,
+      "tag": "0001_equal_lord_hawal",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1776643514722,
+      "tag": "0002_colorful_doctor_doom",
+      "breakpoints": true
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+
+mongo/
+
+docker-compose.yml
+
+.env
+
+node_modules/
+
+dist/
+build/
