@@ -5,7 +5,7 @@ import { PostgresAuthDatasource } from '../../modules/auth/infrastructure/persis
 
 export const makeAuthDatasource = (): AuthDatasource => {
 
-  switch ( envs.DATABASE_PROVIDER ) {
+  switch ( envs.AUTH_DATABASE_PROVIDER ) {
     case 'postgres':
       return new PostgresAuthDatasource();
 

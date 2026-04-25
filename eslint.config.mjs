@@ -40,4 +40,10 @@ export default tseslint.config(
       '@typescript-eslint/no-wrapper-object-types': 'off',
     },
   },
+  {
+    files: ['src/shared/types/**/*.ts'],
+    rules: {
+      '@typescript-eslint/no-namespace': 'off',
+    },
+  },
 );

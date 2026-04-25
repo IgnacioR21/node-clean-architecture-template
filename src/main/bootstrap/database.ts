@@ -4,7 +4,7 @@ import { PostgresDatabase } from '../../shared/infrastructure/database/postgres/
 
 export const connectDatabase = async(): Promise<void> => {
 
-  switch ( envs.DATABASE_PROVIDER ) {
+  switch ( envs.AUTH_DATABASE_PROVIDER ) {
     case 'postgres':
       await PostgresDatabase.connect();
       return;

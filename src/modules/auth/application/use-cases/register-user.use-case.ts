@@ -1,4 +1,4 @@
-import { randomUUID } from 'crypto';
+import { randomUUID } from 'node:crypto';
 import { JwtAdapter, JwtTokenPayload } from '../../../../config';
 import { CustomError } from '../../../../shared/errors/custom.error';
 import { TokenHashHelper } from '../../../../shared/helpers/token-hash';
@@ -64,6 +64,7 @@ export class RegisterUser implements RegisterUserUseCase {
       sub: user.id,
       sessionId: sessionId,
       type: 'refresh',
+      jti: randomUUID(),
     });
     if ( !refreshToken ) throw CustomError.internalServer('Error generating refresh token');
 

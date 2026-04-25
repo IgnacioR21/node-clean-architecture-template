@@ -2,6 +2,8 @@ import 'dotenv/config';
 import { get } from 'env-var';
 
 const JWT_SEED = get('JWT_SEED').required().asString();
+const AUTH_DATABASE_PROVIDER = get('AUTH_DATABASE_PROVIDER').asEnum(['postgres', 'mongo', 'sqlite', 'memory']);
+const DATABASE_PROVIDER = get('DATABASE_PROVIDER').asEnum(['postgres', 'mongo', 'sqlite', 'memory']);
 
 
 export const envs = {
@@ -9,7 +11,8 @@ export const envs = {
 
   PORT: get('PORT').required().asPortNumber(),
 
-  DATABASE_PROVIDER: get('DATABASE_PROVIDER').default('postgres').asEnum(['postgres', 'mongo', 'sqlite', 'memory']),
+  AUTH_DATABASE_PROVIDER: AUTH_DATABASE_PROVIDER || DATABASE_PROVIDER || 'postgres',
+  DATABASE_PROVIDER: DATABASE_PROVIDER || 'postgres',
   DATABASE_URL: get('DATABASE_URL').required().asString(),
 
   JWT_SEED: JWT_SEED,

@@ -214,8 +214,8 @@ This means browser clients can be cookie-first, while manual/API clients still w
 
 The application depends on business contracts such as `AuthDatasource`, not on PostgreSQL, Drizzle, MongoDB, or any other provider directly.
 
-Right now the implemented provider is:
-- `DATABASE_PROVIDER=postgres`
+Right now the implemented auth provider is:
+- `AUTH_DATABASE_PROVIDER=postgres`
 
 Provider-specific selection happens in:
 - `src/main/bootstrap/database.ts`
@@ -225,6 +225,7 @@ This means:
 - controllers, routes, use-cases, and domain entities do not switch providers directly
 - PostgreSQL/Drizzle stays inside infrastructure
 - adding MongoDB or SQLite later means creating a new datasource implementation that satisfies the same domain contract
+- future modules can introduce their own provider envs and factories without changing auth
 
 ## Database and Drizzle Workflow
 
@@ -274,7 +275,7 @@ Current variables:
 
 ```env
 PORT=3000
-DATABASE_PROVIDER=postgres
+AUTH_DATABASE_PROVIDER=postgres
 DATABASE_URL=postgresql://postgres:postgres@localhost:5432/app_db
 JWT_SEED=
 JWT_REFRESH_SEED=
@@ -287,8 +288,13 @@ AUTH_REFRESH_COOKIE_PATH=/api/auth
 ```
 
 Notes:
-- `DATABASE_PROVIDER` defaults to `postgres` for backward compatibility in local development.
-- In production, set `DATABASE_PROVIDER=postgres` explicitly instead of relying on the default.
+- `AUTH_DATABASE_PROVIDER` is the preferred explicit setting for auth going forward.
+- Resolution order is:
+  1. `AUTH_DATABASE_PROVIDER`
+  2. `DATABASE_PROVIDER` as a backward-compatible fallback
+  3. `postgres` as the default
+- `DATABASE_PROVIDER` is still supported as a legacy/global fallback for backward compatibility.
+- In production, set `AUTH_DATABASE_PROVIDER=postgres` explicitly instead of relying on the default.
 - `JWT_REFRESH_SEED` falls back to `JWT_SEED` if not set, but using a dedicated refresh secret is recommended.
 - In production, `AUTH_REFRESH_COOKIE_SECURE` should normally be `true`.
 - If you use `AUTH_REFRESH_COOKIE_SAME_SITE=none`, you should also use HTTPS.
@@ -308,7 +314,7 @@ npm install
 cp .env.template .env
 ```
 
-Then update `.env` with your real provider setting, PostgreSQL credentials, and JWT secrets.
+Then update `.env` with your real auth provider setting, PostgreSQL credentials, and JWT secrets.
 
 ### 3. Start PostgreSQL
 
@@ -332,7 +338,7 @@ npm run db:migrate
 npm run dev
 ```
 
-The app starts from `src/app.ts`, selects the configured provider bootstrap, connects to PostgreSQL when `DATABASE_PROVIDER=postgres`, and then boots the Express server.
+The app starts from `src/app.ts`, selects the configured auth provider bootstrap, connects to PostgreSQL when the resolved auth provider is `postgres`, and then boots the Express server.
 
 ## Available Scripts
 

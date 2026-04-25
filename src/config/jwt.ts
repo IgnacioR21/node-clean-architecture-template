@@ -11,6 +11,7 @@ export interface JwtTokenPayload {
   sub: string;
   sessionId: string;
   type: JwtTokenType;
+  jti?: string;
 }
 
 
@@ -86,6 +87,7 @@ export class JwtAdapter {
           sub: payload.sub,
           sessionId: payload.sessionId,
           type: type,
+          ...( typeof payload.jti === 'string' && { jti: payload.jti } ),
         });
 
       });
