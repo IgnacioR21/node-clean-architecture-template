@@ -9,6 +9,7 @@ export const envs = {
 
   PORT: get('PORT').required().asPortNumber(),
 
+  DATABASE_PROVIDER: get('DATABASE_PROVIDER').default('postgres').asEnum(['postgres', 'mongo', 'sqlite', 'memory']),
   DATABASE_URL: get('DATABASE_URL').required().asString(),
 
   JWT_SEED: JWT_SEED,

@@ -1,7 +1,7 @@
-import { AuthSessionEntity, CreateAuthSession, RotateAuthSession } from '../../../domain/entities/auth-session.entity';
-import { AuthDatasource } from '../../../domain/datasources/auth.datasource';
-import { UserEntity } from '../../../domain/entities/user.entity';
-import { AuthRepository } from '../../../domain/repositories/auth.repository';
+import { AuthSessionEntity, CreateAuthSession, RotateAuthSession } from '../../domain/entities/auth-session.entity';
+import { AuthDatasource } from '../../domain/datasources/auth.datasource';
+import { UserEntity } from '../../domain/entities/user.entity';
+import { AuthRepository } from '../../domain/repositories/auth.repository';
 
 
 

@@ -2,7 +2,7 @@ import { randomUUID } from 'crypto';
 import { eq } from 'drizzle-orm';
 import { BcryptAdapter } from '../../../../../config';
 import { CustomError } from '../../../../../shared/errors/custom.error';
-import { db } from '../../../../../shared/infrastructure/database/db';
+import { db } from '../../../../../shared/infrastructure/database/postgres/db';
 import { AuthDatasource } from '../../../domain/datasources/auth.datasource';
 import { AuthSessionEntity, CreateAuthSession, RotateAuthSession } from '../../../domain/entities/auth-session.entity';
 import { UserEntity } from '../../../domain/entities/user.entity';
@@ -16,7 +16,7 @@ type HashFunction = (password: string) => string;
 type CompareFunction = (password: string, hashed: string) => boolean;
 
 
-export class AuthDatasourceImpl implements AuthDatasource {
+export class PostgresAuthDatasource implements AuthDatasource {
 
   constructor(
     private readonly hashPassword: HashFunction = BcryptAdapter.hash,

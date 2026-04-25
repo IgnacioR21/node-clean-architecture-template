@@ -1,7 +1,7 @@
 import { envs } from './config';
+import { connectDatabase } from './main/bootstrap/database';
 import { AppRoutes } from './main/routes';
 import { Server } from './main/server';
-import { PostgresDatabase } from './shared/infrastructure/database/db';
 
 
 
@@ -14,7 +14,7 @@ import { PostgresDatabase } from './shared/infrastructure/database/db';
 
 async function main (){
   
-  await PostgresDatabase.connect()
+  await connectDatabase()
 
   
   new Server({
@@ -23,5 +23,4 @@ async function main (){
   })
     .start()
 }
-
 

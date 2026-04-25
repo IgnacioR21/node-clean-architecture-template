@@ -41,7 +41,7 @@ It is not trying to be a full framework. The current implementation is intention
 ## Features Included Today
 
 - Express server with typed environment configuration
-- PostgreSQL connection with Drizzle schema registration
+- Persistence provider selection with PostgreSQL/Drizzle currently implemented
 - Auth module wired through DI in `main`
 - User registration and login
 - Access token + refresh token flow
@@ -62,13 +62,13 @@ The repository uses four main areas under `src`:
   Shared runtime/config helpers such as env parsing, JWT helpers, bcrypt adapter, and generic validators.
 
 - `main`
-  App composition layer. This is where routes are mounted and dependencies are wired together.
+  App composition layer. This is where routes are mounted, dependencies are wired together, and provider bootstrap/factories live.
 
 - `modules`
   Business features. Right now the template includes one module: `auth`.
 
 - `shared`
-  Shared infrastructure and cross-cutting code such as database wiring, common middleware, error helpers, type augmentation, and utility helpers.
+  Shared infrastructure and cross-cutting code such as provider-specific database wiring, common middleware, error helpers, type augmentation, and utility helpers.
 
 ### Auth Module Structure
 
@@ -81,7 +81,7 @@ The current auth module follows this structure:
   DTOs and use-cases. In auth this includes login, register, refresh, logout, and get-user-by-id flows.
 
 - `infrastructure`
-  Concrete implementations. In auth this includes Drizzle schemas, mappers, and repository/datasource implementations.
+  Concrete implementations. In auth this includes PostgreSQL/Drizzle persistence, mappers, and repository/datasource implementations.
 
 - `presentation`
   Express-facing layer. In auth this includes routes, controller, middleware, validators, and refresh-cookie helpers.
@@ -95,7 +95,9 @@ src/
   app.ts
   config/
   main/
+    bootstrap/
     di/
+    factories/
     routes.ts
     server.ts
   modules/
@@ -109,8 +111,9 @@ src/
         repositories/
       infrastructure/
         mappers/
+        repositories/
         persistence/
-          drizzle/
+          postgres/
       presentation/
         helpers/
         middlewares/
@@ -122,6 +125,7 @@ src/
     helpers/
     infrastructure/
       database/
+        postgres/
     presentation/
       middlewares/
     types/
@@ -206,6 +210,22 @@ Refresh priority is:
 
 This means browser clients can be cookie-first, while manual/API clients still work without a second auth flow.
 
+## Persistence Providers
+
+The application depends on business contracts such as `AuthDatasource`, not on PostgreSQL, Drizzle, MongoDB, or any other provider directly.
+
+Right now the implemented provider is:
+- `DATABASE_PROVIDER=postgres`
+
+Provider-specific selection happens in:
+- `src/main/bootstrap/database.ts`
+- `src/main/factories/auth-datasource.factory.ts`
+
+This means:
+- controllers, routes, use-cases, and domain entities do not switch providers directly
+- PostgreSQL/Drizzle stays inside infrastructure
+- adding MongoDB or SQLite later means creating a new datasource implementation that satisfies the same domain contract
+
 ## Database and Drizzle Workflow
 
 The project uses Drizzle ORM with schema files in code and SQL migrations in the `drizzle/` folder.
@@ -215,9 +235,9 @@ Current auth-related tables:
 - `auth_sessions`
 
 Relevant files:
-- `src/modules/auth/infrastructure/persistence/drizzle/user.schema.ts`
-- `src/modules/auth/infrastructure/persistence/drizzle/auth-session.schema.ts`
-- `src/shared/infrastructure/database/schema.ts`
+- `src/modules/auth/infrastructure/persistence/postgres/user.schema.ts`
+- `src/modules/auth/infrastructure/persistence/postgres/auth-session.schema.ts`
+- `src/shared/infrastructure/database/postgres/schema.ts`
 
 ### Current Migration Files
 
@@ -254,6 +274,7 @@ Current variables:
 
 ```env
 PORT=3000
+DATABASE_PROVIDER=postgres
 DATABASE_URL=postgresql://postgres:postgres@localhost:5432/app_db
 JWT_SEED=
 JWT_REFRESH_SEED=
@@ -266,6 +287,8 @@ AUTH_REFRESH_COOKIE_PATH=/api/auth
 ```
 
 Notes:
+- `DATABASE_PROVIDER` defaults to `postgres` for backward compatibility in local development.
+- In production, set `DATABASE_PROVIDER=postgres` explicitly instead of relying on the default.
 - `JWT_REFRESH_SEED` falls back to `JWT_SEED` if not set, but using a dedicated refresh secret is recommended.
 - In production, `AUTH_REFRESH_COOKIE_SECURE` should normally be `true`.
 - If you use `AUTH_REFRESH_COOKIE_SAME_SITE=none`, you should also use HTTPS.
@@ -285,7 +308,7 @@ npm install
 cp .env.template .env
 ```
 
-Then update `.env` with your real PostgreSQL credentials and JWT secrets.
+Then update `.env` with your real provider setting, PostgreSQL credentials, and JWT secrets.
 
 ### 3. Start PostgreSQL
 
@@ -309,7 +332,7 @@ npm run db:migrate
 npm run dev
 ```
 
-The app starts from `src/app.ts`, connects to PostgreSQL, and then boots the Express server.
+The app starts from `src/app.ts`, selects the configured provider bootstrap, connects to PostgreSQL when `DATABASE_PROVIDER=postgres`, and then boots the Express server.
 
 ## Available Scripts
 
