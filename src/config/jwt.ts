@@ -17,19 +17,19 @@ export interface JwtTokenPayload {
 export class JwtAdapter {
 
   static generateAccessToken( payload: JwtTokenPayload ): Promise<string | null> {
-    return this.signToken(payload, ACCESS_JWT_SEED, envs.JWT_ACCESS_EXPIRES_IN);
+    return JwtAdapter.signToken(payload, ACCESS_JWT_SEED, envs.JWT_ACCESS_EXPIRES_IN);
   }
 
   static generateRefreshToken( payload: JwtTokenPayload ): Promise<string | null> {
-    return this.signToken(payload, REFRESH_JWT_SEED, envs.JWT_REFRESH_EXPIRES_IN);
+    return JwtAdapter.signToken(payload, REFRESH_JWT_SEED, envs.JWT_REFRESH_EXPIRES_IN);
   }
 
   static validateAccessToken( token: string ): Promise<JwtTokenPayload | null> {
-    return this.validateToken(token, ACCESS_JWT_SEED, 'access');
+    return JwtAdapter.validateToken(token, ACCESS_JWT_SEED, 'access');
   }
 
   static validateRefreshToken( token: string ): Promise<JwtTokenPayload | null> {
-    return this.validateToken(token, REFRESH_JWT_SEED, 'refresh');
+    return JwtAdapter.validateToken(token, REFRESH_JWT_SEED, 'refresh');
   }
 
   static getTokenExpirationDate( token: string ): Date | null {

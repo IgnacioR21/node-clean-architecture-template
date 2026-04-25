@@ -1,3 +1,4 @@
+import './shared/types/express';
 import { envs } from './config';
 import { connectDatabase } from './main/bootstrap/database';
 import { AppRoutes } from './main/routes';
@@ -23,4 +24,3 @@ async function main (){
   })
     .start()
 }
-
